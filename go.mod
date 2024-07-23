@@ -1,4 +1,4 @@
-module koreyik
+module github.com/serwennn/koreyik
 
 go 1.22.3
 
