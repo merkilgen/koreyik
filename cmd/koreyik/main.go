@@ -3,11 +3,17 @@ package main
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/serwennn/koreyik/internal/config"
 	"log"
 	"net/http"
 )
 
 func main() {
+	cfg := config.New()
+	_ = cfg
+
+	// TODO: Connect to database
+
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -22,6 +28,8 @@ func main() {
 		Addr:    "0.0.0.0:8080",
 		Handler: r,
 	}
+
+	// TODO: Graceful shutdown
 
 	log.Fatal(serv.ListenAndServe())
 }
