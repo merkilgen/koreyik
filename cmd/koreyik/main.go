@@ -4,15 +4,16 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/serwennn/koreyik/internal/config"
+	"github.com/serwennn/koreyik/internal/storage"
 	"log"
 	"net/http"
 )
 
 func main() {
 	cfg := config.New()
-	_ = cfg
 
-	// TODO: Connect to database
+	stg := storage.New(cfg.StoragePath)
+	_ = stg // temporary
 
 	r := chi.NewRouter()
 
