@@ -26,11 +26,12 @@ func main() {
 	})
 
 	serv := &http.Server{
-		Addr:    "0.0.0.0:8080",
+		Addr:    cfg.Address,
 		Handler: r,
 	}
 
 	// TODO: Graceful shutdown
 
+	log.Printf("Server is running on http://%s [ENV: %s]\n", serv.Addr, cfg.Env)
 	log.Fatal(serv.ListenAndServe())
 }
