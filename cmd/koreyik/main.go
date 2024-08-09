@@ -4,6 +4,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/serwennn/koreyik/internal/config"
+	"github.com/serwennn/koreyik/internal/server"
 	"github.com/serwennn/koreyik/internal/storage"
 	"log"
 	"net/http"
@@ -25,13 +26,9 @@ func main() {
 		w.Write([]byte("Koreyik!"))
 	})
 
-	serv := &http.Server{
-		Addr:    cfg.Address,
-		Handler: r,
-	}
-
 	// TODO: Graceful shutdown
 
-	log.Printf("Server is running on http://%s [ENV: %s]\n", serv.Addr, cfg.Env)
-	log.Fatal(serv.ListenAndServe())
+	serv := server.NewServer(cfg, r)
+	log.Printf("Server is running on http://%s [ENV: %s]\n", serv.HttpServer.Addr, cfg.Env)
+	log.Fatal(serv.Run())
 }
