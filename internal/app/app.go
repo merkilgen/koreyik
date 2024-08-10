@@ -1,8 +1,10 @@
 package app
 
 import (
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/serwennn/koreyik/internal/config"
-	"github.com/serwennn/koreyik/internal/network"
+	"github.com/serwennn/koreyik/internal/network/routes"
 	"github.com/serwennn/koreyik/internal/server"
 	"github.com/serwennn/koreyik/internal/storage"
 	"log"
@@ -17,7 +19,16 @@ func Run() {
 	stg := storage.New(cfg.StoragePath)
 	_ = stg // TODO: Use the storage
 
-	r := network.NewRouter()
+	// Router
+	r := chi.NewRouter()
+
+	r.Use(
+		middleware.RequestID,
+		middleware.Recoverer,
+		middleware.Logger,
+	)
+
+	routes.RegisterRoutes(r)
 
 	srv := server.NewServer(cfg, r)
 	go func() {
