@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/joho/godotenv"
 	"github.com/serwennn/koreyik/internal/config"
 	"github.com/serwennn/koreyik/internal/network/routes"
 	"github.com/serwennn/koreyik/internal/server"
@@ -14,6 +15,12 @@ import (
 )
 
 func Run() {
+	// Load .env file
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	cfg := config.New()
 
 	stg := storage.New(cfg.StoragePath)

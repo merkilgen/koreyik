@@ -2,7 +2,6 @@ package config
 
 import (
 	"github.com/ilyakaznacheev/cleanenv"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"time"
@@ -22,12 +21,6 @@ type Server struct {
 
 func New() *Config {
 	// Get the path to the configuration file from the environment
-
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
 		log.Fatal("CONFIG_PATH is not set")
