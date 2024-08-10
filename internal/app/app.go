@@ -26,7 +26,7 @@ func Run() {
 		}
 	}()
 
-	log.Printf("Server is running on http://%s [ENV: %s]\n", srv.HttpServer.Addr, cfg.Env)
+	log.Printf("Server is running on http://%s [ENV: %s]\n", cfg.Address, cfg.Env)
 
 	// Graceful shutdown
 	quit := make(chan os.Signal, 1)

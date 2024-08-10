@@ -6,12 +6,12 @@ import (
 )
 
 type Server struct {
-	HttpServer *http.Server
+	httpServer *http.Server
 }
 
 func NewServer(cfg *config.Config, handler http.Handler) *Server {
 	return &Server{
-		HttpServer: &http.Server{
+		httpServer: &http.Server{
 			Addr:        cfg.Address,
 			Handler:     handler,
 			ReadTimeout: cfg.Server.Timeout,
@@ -21,9 +21,9 @@ func NewServer(cfg *config.Config, handler http.Handler) *Server {
 }
 
 func (s *Server) Run() error {
-	return s.HttpServer.ListenAndServe()
+	return s.httpServer.ListenAndServe()
 }
 
 func (s *Server) Shutdown() error {
-	return s.HttpServer.Shutdown(nil)
+	return s.httpServer.Shutdown(nil)
 }
