@@ -26,4 +26,4 @@ go.work.sum
 .env
 .idea
 *.db
-/config/local.yaml
+/config/local.yaml!/.env
