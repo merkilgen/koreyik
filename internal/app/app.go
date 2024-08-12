@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
@@ -8,20 +9,28 @@ import (
 	"github.com/serwennn/koreyik/internal/network/routes"
 	"github.com/serwennn/koreyik/internal/server"
 	"github.com/serwennn/koreyik/internal/storage"
-	"log"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
+const (
+	EnvLocal = "local"
+	EnvProd  = "prod"
+)
+
 func Run() {
+
 	// Load .env file
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		panic(fmt.Sprintf("Failed to load .env file: %s", err.Error()))
 	}
 
 	cfg := config.New()
+
+	log := setupLogger(cfg.Env)
 
 	stg := storage.New(cfg.StoragePath)
 	_ = stg // TODO: Use the storage
@@ -40,11 +49,11 @@ func Run() {
 	srv := server.NewServer(cfg, r)
 	go func() {
 		if err := srv.Run(); err != nil {
-			log.Fatalf("Failed to run the server: %s\n", err.Error())
+			panic(fmt.Sprintf("Failed to run the server: %s", err.Error()))
 		}
 	}()
 
-	log.Printf("Server is running on http://%s [ENV: %s]\n", cfg.Address, cfg.Env)
+	log.Info(fmt.Sprintf("Server is running on http://%s", cfg.Address), "env", cfg.Env)
 
 	// Graceful shutdown
 	quit := make(chan os.Signal, 1)
@@ -54,5 +63,24 @@ func Run() {
 
 	// TODO: Close the storage
 
-	log.Println("Shutting down the server...")
+	log.Info("Server is shutting down")
+}
+
+func setupLogger(env string) *slog.Logger {
+	var log *slog.Logger
+
+	switch env {
+	case EnvLocal:
+		log = slog.New(
+			slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
+		)
+	case EnvProd:
+		log = slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}),
+		)
+	default:
+		panic(fmt.Sprintf("setupLogger: Env must be either %s or %s", EnvLocal, EnvProd))
+	}
+
+	return log
 }
