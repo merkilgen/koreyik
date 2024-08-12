@@ -6,9 +6,7 @@ import (
 
 func RegisterRoutes(r *chi.Mux) {
 	r.Route("/api", func(r chi.Router) {
-		registerExample(r)
 		registerMediaEntry(r)
-		// TODO: Register routes here
 	})
 
 }
