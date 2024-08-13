@@ -18,7 +18,7 @@ func New(storagePath string) (*Storage, error) {
 	}
 
 	// Check the connection
-	if err := db.Ping(); err != nil {
+	if err = db.Ping(); err != nil {
 		return nil, fmt.Errorf(err.Error())
 	}
 

@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
 	"github.com/serwennn/koreyik/internal/config"
+	middlewareLogger "github.com/serwennn/koreyik/internal/network/middleware/logger"
 	"github.com/serwennn/koreyik/internal/network/routes"
 	"github.com/serwennn/koreyik/internal/server"
 	"github.com/serwennn/koreyik/internal/storage"
@@ -49,9 +50,9 @@ func Run() {
 	r := chi.NewRouter()
 
 	r.Use(
+		middlewareLogger.New(log),
 		middleware.RequestID,
 		middleware.Recoverer,
-		middleware.Logger,
 	)
 
 	routes.RegisterRoutes(r)
@@ -65,7 +66,7 @@ func Run() {
 	}()
 
 	log.Info(
-		fmt.Sprintf("Server is running on http://%s", cfg.Address),
+		fmt.Sprintf("Server is running on http://%s/", cfg.Address),
 		"env", cfg.Env,
 	)
 
