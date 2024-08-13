@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"github.com/serwennn/koreyik/internal/config"
 	"net/http"
 )
@@ -24,6 +25,6 @@ func (s *Server) Run() error {
 	return s.httpServer.ListenAndServe()
 }
 
-func (s *Server) Shutdown() error {
-	return s.httpServer.Shutdown(nil)
+func (s *Server) Shutdown(ctx context.Context) error {
+	return s.httpServer.Shutdown(ctx)
 }

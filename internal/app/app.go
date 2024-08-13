@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/go-chi/chi/v5"
@@ -17,6 +18,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 const (
@@ -35,6 +37,12 @@ func Run() {
 	cfg := config.New()
 
 	log := setupLogger(cfg.Env)
+
+	log.Info(
+		"Starting Koreyik!",
+		slog.String("env", cfg.Env),
+		slog.String("version", "0.0.0"), // TODO: Move version to config
+	)
 
 	stg, err := storage.New(cfg.StoragePath)
 	if err != nil {
@@ -65,10 +73,7 @@ func Run() {
 		}
 	}()
 
-	log.Info(
-		fmt.Sprintf("Server is running on http://%s/", cfg.Address),
-		"env", cfg.Env,
-	)
+	log.Info(fmt.Sprintf("Server is running on http://%s/", cfg.Address))
 
 	// Graceful shutdown
 	quit := make(chan os.Signal, 1)
@@ -77,7 +82,11 @@ func Run() {
 	<-quit
 	log.Info("Server is shutting down")
 
-	if err := srv.Shutdown(); err != nil {
+	// TODO: move timeout to config
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
 		log.Error("Failed to shut down the server", "error", err.Error())
 
 		return
