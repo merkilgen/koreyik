@@ -39,9 +39,9 @@ func Run() {
 	log := setupLogger(cfg.Env)
 
 	log.Info(
-		"Starting Koreyik!",
+		"Starting Köreyik!",
 		slog.String("env", cfg.Env),
-		slog.String("version", "0.0.0"), // TODO: Move version to config
+		slog.String("version", cfg.Version),
 	)
 
 	stg, err := storage.New(cfg.StoragePath)
