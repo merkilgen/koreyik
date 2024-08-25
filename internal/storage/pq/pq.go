@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v5" // driver
 	"github.com/serwennn/koreyik/internal/config"
-	"github.com/serwennn/koreyik/internal/storage"
 )
 
 type Storage struct {
@@ -13,7 +12,7 @@ type Storage struct {
 }
 
 func New(storageOptions config.Storage) (*Storage, error) {
-	url := storage.DatabaseUrlCreator(storageOptions)
+	url := databaseUrlCreator(storageOptions)
 
 	conn, err := pgx.Connect(context.Background(), url)
 	if err != nil {
@@ -27,4 +26,12 @@ func New(storageOptions config.Storage) (*Storage, error) {
 	}
 
 	return &Storage{conn: conn}, nil
+}
+
+func databaseUrlCreator(storage config.Storage) string {
+	// urlExample := "postgres://username:password@localhost:5432/database_name"
+	return fmt.Sprintf(
+		"postgres://%s:%s@%s:%d/%s",
+		storage.Username, storage.Password, storage.Server, storage.Port, storage.Database,
+	)
 }
