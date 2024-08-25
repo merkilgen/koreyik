@@ -8,16 +8,24 @@ import (
 )
 
 type Config struct {
-	Env         string `yaml:"env" env-default:"prod"`
-	Version     string `yaml:"version" env-default:"0.0.0"`
-	StoragePath string `yaml:"storage_path" env-required:"true"`
-	Server      `yaml:"server"`
+	Env     string `yaml:"env" env-default:"prod"`
+	Version string `yaml:"version" env-default:"0.0.0"`
+	Server  `yaml:"server"`
+	Storage `yaml:"storage"`
 }
 
 type Server struct {
 	Address     string        `yaml:"address" env-default:"localhost:8080"`
 	Timeout     time.Duration `yaml:"timeout" env-default:"4s"`
 	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"30s"`
+}
+
+type Storage struct {
+	Server   string `yaml:"server" env-default:"localhost"`
+	Database string `yaml:"database" env-default:"postgres"`
+	Port     int    `yaml:"port" env-default:"5432"`
+	Username string `yaml:"username" env-required:"true"`
+	Password string `yaml:"password" env:"storage_password" env-required:"true"`
 }
 
 func New() *Config {

@@ -1,28 +1,14 @@
 package storage
 
 import (
-	"database/sql"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3" // driver for SQLite3
+	"github.com/serwennn/koreyik/internal/config"
 )
 
-type Storage struct {
-	db *sql.DB
-}
-
-func New(storagePath string) (*Storage, error) {
-	// Connect to the database
-	db, err := sql.Open("sqlite3", storagePath)
-	if err != nil {
-		return nil, fmt.Errorf(err.Error())
-	}
-
-	// Check the connection
-	if err = db.Ping(); err != nil {
-		return nil, fmt.Errorf(err.Error())
-	}
-
-	// TODO: Create tables
-
-	return &Storage{db: db}, nil
+func DatabaseUrlCreator(storage config.Storage) string {
+	// urlExample := "postgres://username:password@localhost:5432/database_name"
+	return fmt.Sprintf(
+		"postgres://%s:%s@%s:%d/%s",
+		storage.Username, storage.Password, storage.Server, storage.Port, storage.Database,
+	)
 }

@@ -11,7 +11,7 @@ import (
 	middlewareLogger "github.com/serwennn/koreyik/internal/network/middleware/logger"
 	"github.com/serwennn/koreyik/internal/network/routes"
 	"github.com/serwennn/koreyik/internal/server"
-	"github.com/serwennn/koreyik/internal/storage"
+	"github.com/serwennn/koreyik/internal/storage/pq"
 	"gitlab.com/greyxor/slogor"
 	"log/slog"
 	"net/http"
@@ -47,12 +47,16 @@ func Run() {
 		slog.String("version", cfg.Version),
 	)
 
-	stg, err := storage.New(cfg.StoragePath)
+	stg, err := pq.New(cfg.Storage)
 	if err != nil {
 		log.Error("Failed to connect to the storage", "error", err.Error())
 		os.Exit(1)
 	} else {
-		log.Info("Connected to the storage")
+		log.Info(
+			"Connected to the storage",
+			slog.String("server", cfg.Storage.Server),
+			slog.Int("port", cfg.Storage.Port),
+		)
 	}
 
 	_ = stg // TODO: Use the storage
