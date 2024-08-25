@@ -7,9 +7,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
+	middlewareLogger "github.com/serwennn/koreyik/api/middleware/logger"
+	"github.com/serwennn/koreyik/api/routes"
 	"github.com/serwennn/koreyik/internal/config"
-	middlewareLogger "github.com/serwennn/koreyik/internal/network/middleware/logger"
-	"github.com/serwennn/koreyik/internal/network/routes"
 	"github.com/serwennn/koreyik/internal/server"
 	"github.com/serwennn/koreyik/internal/storage/pq"
 	"gitlab.com/greyxor/slogor"
@@ -57,6 +57,14 @@ func Run() {
 			"Connected to the storage",
 			slog.String("server", cfg.Storage.Server),
 			slog.Int("port", cfg.Storage.Port),
+		)
+
+		log.Debug("Storage info",
+			slog.String("server", cfg.Storage.Server),
+			slog.Int("port", cfg.Storage.Port),
+			slog.String("database", cfg.Storage.Database),
+			slog.String("username", cfg.Storage.Username),
+			slog.String("password", cfg.Storage.Password),
 		)
 	}
 
