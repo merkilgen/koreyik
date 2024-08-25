@@ -11,17 +11,19 @@ type Storage struct {
 	conn *pgx.Conn
 }
 
+var ctx = context.Background()
+
 func New(storageOptions config.Storage) (*Storage, error) {
 	url := databaseUrlCreator(storageOptions)
 
-	conn, err := pgx.Connect(context.Background(), url)
+	conn, err := pgx.Connect(ctx, url)
 	if err != nil {
 		return nil, fmt.Errorf(err.Error())
 	}
-	defer conn.Close(context.Background())
+	defer conn.Close(ctx)
 
 	// Check the connection
-	if err = conn.Ping(context.Background()); err != nil {
+	if err = conn.Ping(ctx); err != nil {
 		return nil, fmt.Errorf(err.Error())
 	}
 

@@ -12,6 +12,7 @@ import (
 	"github.com/serwennn/koreyik/internal/config"
 	"github.com/serwennn/koreyik/internal/server"
 	"github.com/serwennn/koreyik/internal/storage/pq"
+	"github.com/serwennn/koreyik/internal/storage/redis"
 	"gitlab.com/greyxor/slogor"
 	"log/slog"
 	"net/http"
@@ -48,6 +49,7 @@ func Run() {
 		slog.String("version", cfg.Version),
 	)
 
+	// Loading database (PostgreSQL)
 	stg, err := pq.New(cfg.Storage)
 	if err != nil {
 		log.Error("Failed to connect to the storage", "error", err.Error())
@@ -70,6 +72,27 @@ func Run() {
 
 	_ = stg // TODO: Use the storage
 
+	// Loading cache server (Redis)
+	cacheClient, err := redis.New(cfg.CacheServer)
+	if err != nil {
+		log.Error("Failed to connect to the cache server", "error", err.Error())
+		os.Exit(1)
+	} else {
+		log.Info(
+			"Connected to the cache server",
+			slog.String("address", cfg.CacheServer.Address),
+			slog.Int("database", cfg.CacheServer.Database),
+		)
+
+		log.Debug("Cache server info",
+			slog.String("address", cfg.CacheServer.Address),
+			slog.String("password", cfg.CacheServer.Password),
+			slog.Int("database", cfg.CacheServer.Database),
+		)
+	}
+
+	_ = cacheClient // TODO: Use the cache server
+
 	// Router
 	r := chi.NewRouter()
 
@@ -91,7 +114,7 @@ func Run() {
 
 	timeTaken := time.Since(startTime)
 	log.Info(
-		fmt.Sprintf("Server is running on http://%s/", cfg.Address),
+		fmt.Sprintf("Server is running on http://%s/", cfg.Server.Address),
 		slog.String("time_taken", timeTaken.String()),
 	)
 
