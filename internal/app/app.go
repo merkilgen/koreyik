@@ -34,7 +34,8 @@ func Run() {
 	// Load .env file
 	err := godotenv.Load()
 	if err != nil {
-		panic(fmt.Sprintf("Failed to load .env file: %s", err.Error()))
+		fmt.Fprintf(os.Stderr, "Failed to load .env file: %s", err.Error())
+		os.Exit(1)
 	}
 
 	cfg := config.New()
