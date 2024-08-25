@@ -28,6 +28,9 @@ const (
 
 func Run() {
 
+	// Counting server starting time
+	startTime := time.Now()
+
 	// Load .env file
 	err := godotenv.Load()
 	if err != nil {
@@ -73,7 +76,11 @@ func Run() {
 		}
 	}()
 
-	log.Info(fmt.Sprintf("Server is running on http://%s/", cfg.Address))
+	timeTaken := time.Since(startTime)
+	log.Info(
+		fmt.Sprintf("Server is running on http://%s/", cfg.Address),
+		slog.String("time_taken", timeTaken.String()),
+	)
 
 	// Graceful shutdown
 	quit := make(chan os.Signal, 1)
