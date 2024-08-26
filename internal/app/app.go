@@ -133,7 +133,8 @@ func Run() {
 		return
 	}
 
-	// TODO: Close the storage
+	stg.Shutdown()
+	log.Info("Storage has been shut down")
 
 	log.Info("Server has been shut down")
 }

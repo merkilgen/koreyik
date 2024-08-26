@@ -3,31 +3,34 @@ package pq
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v5" // driver
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/serwennn/koreyik/internal/config"
 )
 
 type Storage struct {
-	conn *pgx.Conn
+	db *pgxpool.Pool
 }
 
 var ctx = context.Background()
 
-func New(storageOptions config.Storage) (*Storage, error) {
-	url := databaseUrlCreator(storageOptions)
+func New(storageConfig config.Storage) (*Storage, error) {
+	url := databaseUrlCreator(storageConfig)
 
-	conn, err := pgx.Connect(ctx, url)
+	poolConfig, err := pgxpool.ParseConfig(url)
 	if err != nil {
 		return nil, fmt.Errorf(err.Error())
 	}
-	defer conn.Close(ctx)
 
-	// Check the connection
-	if err = conn.Ping(ctx); err != nil {
+	db, err := pgxpool.NewWithConfig(ctx, poolConfig)
+	if err != nil {
 		return nil, fmt.Errorf(err.Error())
 	}
 
-	return &Storage{conn: conn}, nil
+	return &Storage{db: db}, nil
+}
+
+func (s *Storage) Shutdown() {
+	s.db.Close()
 }
 
 func databaseUrlCreator(storage config.Storage) string {
