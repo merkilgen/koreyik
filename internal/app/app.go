@@ -102,7 +102,7 @@ func Run() {
 
 	routes.RegisterRoutes(r)
 
-	srv := server.NewServer(cfg, r)
+	srv := server.New(cfg, r)
 	go func() {
 		if err := srv.Run(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Error(
