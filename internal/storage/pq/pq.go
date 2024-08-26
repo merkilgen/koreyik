@@ -34,7 +34,7 @@ func (s *Storage) Shutdown() {
 }
 
 func databaseUrlCreator(storage config.Storage) string {
-	// urlExample := "postgres://username:password@localhost:5432/database_name"
+	// URL should look like this -> "postgres://username:password@host:port/database_name"
 	return fmt.Sprintf(
 		"postgres://%s:%s@%s:%d/%s",
 		storage.Username, storage.Password, storage.Server, storage.Port, storage.Database,

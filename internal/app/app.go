@@ -69,8 +69,6 @@ func Run() {
 		)
 	}
 
-	_ = stg // TODO: Use the storage
-
 	// Loading cache server (Redis)
 	cacheClient, err := redis.New(cfg.CacheServer)
 	if err != nil {
@@ -88,8 +86,6 @@ func Run() {
 			slog.Int("database", cfg.CacheServer.Database),
 		)
 	}
-
-	_ = cacheClient // TODO: Use the cache server
 
 	// Router
 	r := chi.NewRouter()

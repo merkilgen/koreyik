@@ -18,12 +18,13 @@ func registerMediaEntry(r chi.Router) {
 }
 
 func (impl *mediaEntryImpl) getMediaEntries(w http.ResponseWriter, r *http.Request) {
-	// Here we should get the media entries from the storage by ID
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
+
+	// TODO: Get an anime from storage
 
 	// For now, let's return a hardcoded media entry
 	anime := models.Anime{
