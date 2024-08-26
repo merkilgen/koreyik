@@ -7,13 +7,17 @@ import (
 	"github.com/serwennn/koreyik/internal/config"
 )
 
+type CacheServer struct {
+	client *redis.Client
+}
+
 var ctx = context.Background()
 
-func New(cacheServerOptions config.CacheServer) (*redis.Client, error) {
+func New(cacheConfig config.CacheServer) (*CacheServer, error) {
 	client := redis.NewClient(&redis.Options{
-		Addr:     cacheServerOptions.Address,
-		Password: cacheServerOptions.Password,
-		DB:       cacheServerOptions.Database,
+		Addr:     cacheConfig.Address,
+		Password: cacheConfig.Password,
+		DB:       cacheConfig.Database,
 	})
 
 	_, err := client.Ping(ctx).Result()
@@ -21,5 +25,9 @@ func New(cacheServerOptions config.CacheServer) (*redis.Client, error) {
 		return nil, fmt.Errorf(err.Error())
 	}
 
-	return client, nil
+	return &CacheServer{client: client}, nil
+}
+
+func (c *CacheServer) Shutdown() error {
+	return c.client.Close()
 }

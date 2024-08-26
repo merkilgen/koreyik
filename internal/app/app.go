@@ -105,7 +105,10 @@ func Run() {
 	srv := server.NewServer(cfg, r)
 	go func() {
 		if err := srv.Run(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Error("Failed to run the server", "error", err.Error())
+			log.Error(
+				"Failed to run the server",
+				slog.String("error", err.Error()),
+			)
 			os.Exit(1)
 		}
 	}()
@@ -128,13 +131,28 @@ func Run() {
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Error("Failed to shut down the server", "error", err.Error())
+		log.Error(
+			"Failed to shut down the server",
+			slog.String("error", err.Error()),
+		)
 
 		return
 	}
 
+	// Gracefully shutdown the storage
 	stg.Shutdown()
 	log.Info("Storage has been shut down")
+
+	// Gracefully shutdown the cache server
+	err = cacheClient.Shutdown()
+	if err != nil {
+		log.Error(
+			"Failed to shutdown the cache",
+			slog.String("error", err.Error()),
+		)
+	} else {
+		log.Info("Cache server has been shutdown")
+	}
 
 	log.Info("Server has been shut down")
 }
