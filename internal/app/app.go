@@ -66,7 +66,6 @@ func Run() {
 			slog.Int("port", cfg.Storage.Port),
 			slog.String("database", cfg.Storage.Database),
 			slog.String("username", cfg.Storage.Username),
-			slog.String("password", cfg.Storage.Password),
 		)
 	}
 
@@ -86,7 +85,6 @@ func Run() {
 
 		log.Debug("Cache server info",
 			slog.String("address", cfg.CacheServer.Address),
-			slog.String("password", cfg.CacheServer.Password),
 			slog.Int("database", cfg.CacheServer.Database),
 		)
 	}

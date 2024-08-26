@@ -6,6 +6,7 @@ import (
 	"github.com/serwennn/koreyik/internal/models"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type mediaEntryImpl struct{}
@@ -25,30 +26,35 @@ func (impl *mediaEntryImpl) getMediaEntries(w http.ResponseWriter, r *http.Reque
 	}
 
 	// For now, let's return a hardcoded media entry
+	anime := models.Anime{
+		MediaEntry: models.MediaEntry{
+			ID:           id,
+			ThumbnailURL: "https://example.com/image.jpg",
+			Titles: models.Titles{
+				Kk: "Сынықтама",
+				Jp: "テスト",
+				En: "Test",
+			},
+			Related: nil,
 
-	mediaEntry := models.MediaEntry{
-		ID: id,
-		Titles: models.Titles{
-			Kk: "Сынықтама",
-			Jp: "テスト",
-			En: "Test",
+			Status:         "Finished",
+			StartedAiring:  time.Date(2021, 3, 1, 0, 0, 0, 0, time.UTC),
+			FinishedAiring: time.Date(2021, 3, 1, 0, 0, 0, 0, time.UTC),
+
+			Rating: "PG-13",
 		},
-		ThumbnailURL: "https://example.com/image.jpg",
 		Info: models.Info{
-			Seasons:        1,
-			Episodes:       12,
-			Status:         models.StatusFinished,
-			StartedAiring:  "2021-01-01",
-			FinishedAiring: "2021-03-01",
-			Genres:         []string{"Action", "Adventure"},
-			Themes:         []string{"Magic", "Fantasy"},
-			Producers:      []string{"Aniplex", "Bones"},
-			Studios:        []string{"Madhouse", "Sunrise"},
-			Rating:         "PG-13",
+			Seasons:  1,
+			Episodes: 12,
+
+			Genres: []string{"Action", "Adventure"},
+			Themes: []string{"Magic", "Fantasy"},
+
+			Producers: []string{"Aniplex", "Bones"},
+			Studios:   []string{"Madhouse", "Sunrise"},
 		},
-		Related: nil,
 	}
 
-	m, _ := json.Marshal(mediaEntry)
+	m, _ := json.Marshal(anime)
 	w.Write(m)
 }
