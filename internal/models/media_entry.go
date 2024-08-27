@@ -1,22 +1,22 @@
 package models
 
-import "time"
+import (
+	"database/sql"
+)
 
 type MediaEntry struct {
-	ID           int          `json:"id"`
-	ThumbnailURL string       `json:"thumbnail_url"`
-	Titles       Titles       `json:"titles"`
-	Related      []MediaEntry `json:"related"`
+	ID           int
+	ThumbnailURL sql.NullString
 
-	Status         string    `json:"status"`
-	StartedAiring  time.Time `json:"started_airing"`
-	FinishedAiring time.Time `json:"finished_airing"`
+	TitleKk sql.NullString
+	TitleJp sql.NullString
+	TitleEn sql.NullString
 
-	Rating string `json:"rating"`
-}
-
-type Titles struct {
-	Kk string `json:"kk"`
-	Jp string `json:"jp"`
-	En string `json:"en"`
+	//Related []MediaEntry
+	//
+	//Status         string
+	//StartedAiring  time.Time
+	//FinishedAiring time.Time
+	//
+	//Rating string
 }

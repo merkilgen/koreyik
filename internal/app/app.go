@@ -96,7 +96,7 @@ func Run() {
 		middleware.Recoverer,
 	)
 
-	routes.RegisterRoutes(r)
+	routes.RegisterRoutes(r, stg)
 
 	srv := server.New(cfg, r)
 	go func() {
