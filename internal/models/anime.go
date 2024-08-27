@@ -2,7 +2,6 @@ package models
 
 import (
 	"context"
-	"fmt"
 	"github.com/jackc/pgx/v5"
 	"github.com/serwennn/koreyik/internal/storage/pq"
 	"time"
@@ -36,29 +35,15 @@ type Anime struct {
 }
 
 func CreateAnime(storage *pq.Storage, ctx context.Context, a Anime) error {
-	fmt.Println(a)
-	fmt.Println(fmt.Sprintf("%T", a))
-
-	an := Anime{
-		ID:             3,
-		ThumbnailURL:   "2",
-		Description:    "a.Descriipton",
-		Rating:         "a.Rating",
-		TitleKk:        "a.TitleKk",
-		TitleJp:        "a.TitleJp",
-		TitleEn:        "a.TitleEn",
-		Status:         "a.Status",
-		StartedAiring:  time.Now(),
-		FinishedAiring: time.Now(),
-		Genres:         []string{"a.Genres"},
-		Themes:         []string{"a.Genres"},
-		Seasons:        1,
-		Episodes:       2,
-		Duration:       3,
-		Studios:        []string{"a.Genres"},
-		Producers:      []string{"a.Genres"},
-	}
-	_, err := storage.Exec(ctx, "INSERT INTO animes VALUES (?)", an)
+	_, err := storage.Exec(
+		ctx, "INSERT INTO animes VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)",
+		a.ID, a.ThumbnailURL, a.Description, a.Rating,
+		a.TitleKk, a.TitleJp, a.TitleEn,
+		a.Status, a.StartedAiring, a.FinishedAiring,
+		a.Genres, a.Themes,
+		a.Seasons, a.Episodes,
+		a.Duration, a.Studios, a.Producers,
+	)
 	if err != nil {
 		return err
 	}
