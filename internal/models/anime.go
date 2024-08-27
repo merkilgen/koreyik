@@ -4,27 +4,35 @@ import (
 	"context"
 	"github.com/jackc/pgx/v5"
 	"github.com/serwennn/koreyik/internal/storage/pq"
+	"time"
 )
 
-// Anime
-
 type Anime struct {
-	MediaEntry
-	//Info
+	ID           int
+	ThumbnailURL string
+	Description  string
+	Rating       string
+
+	TitleKk string
+	TitleJp string
+	TitleEn string
+
+	Status         string
+	StartedAiring  time.Time
+	FinishedAiring time.Time
+
+	Genres []string
+	Themes []string
+
+	Seasons  int
+	Episodes int
+	Duration int
+
+	Studios   []string
+	Producers []string
+
+	//Related []MediaEntry
 }
-
-/*
-type Info struct {
-	Seasons  int `json:"seasons"`
-	Episodes int `json:"episodes"`
-
-	Genres []string `json:"genres"`
-	Themes []string `json:"themes"`
-
-	Producers []string `json:"producers"`
-	Studios   []string `json:"studios"`
-}
-*/
 
 func CreateAnime(storage *pq.Storage, ctx context.Context, id int, thumbnailUrl, titleKk, titleEn, titleJp string) (Anime, error) {
 	_, err := storage.Exec(ctx, "INSERT INTO animes VALUES($1, $2, $3, $4, $5)", id, thumbnailUrl, titleKk, titleEn, titleJp)
