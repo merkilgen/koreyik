@@ -12,16 +12,16 @@ import (
 	"strconv"
 )
 
-type mediaEntryImpl struct{}
+type animeImpl struct{}
 
-func registerMediaEntry(r chi.Router, stg *pq.Storage) {
-	impl := &mediaEntryImpl{}
+func registerAnime(r chi.Router, stg *pq.Storage) {
+	impl := &animeImpl{}
 
-	r.Get("/media/{id}", impl.getMediaEntries(stg))
-	r.Post("/media/", impl.postMediaEntries(stg))
+	r.Get("/anime/{id}", impl.getAnime(stg))
+	r.Post("/anime/", impl.postAnime(stg))
 }
 
-func (impl *mediaEntryImpl) getMediaEntries(stg *pq.Storage) http.HandlerFunc {
+func (impl *animeImpl) getAnime(stg *pq.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
@@ -44,8 +44,22 @@ func (impl *mediaEntryImpl) getMediaEntries(stg *pq.Storage) http.HandlerFunc {
 	}
 }
 
-func (impl *mediaEntryImpl) postMediaEntries(stg *pq.Storage) http.HandlerFunc {
+func (impl *animeImpl) postAnime(stg *pq.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// create
+		var newAnime models.Anime
+
+		err := json.NewDecoder(r.Body).Decode(&newAnime)
+		if err != nil {
+			http.Error(w, "Json decode: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		err = models.CreateAnime(stg, r.Context(), newAnime)
+		if err != nil {
+			http.Error(w, "Create Anime: "+err.Error(), http.StatusInternalServerError)
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		//http.Redirect(w, r, fmt.Sprintf("/anime/%s", strconv.Itoa(newAnime.ID)), http.StatusFound)
 	}
 }

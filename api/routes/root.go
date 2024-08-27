@@ -9,7 +9,7 @@ func RegisterRoutes(r *chi.Mux, stg *pq.Storage) {
 	// Register the API routes
 	api := chi.NewRouter()
 
-	registerMediaEntry(api, stg)
+	registerAnime(api, stg)
 
 	r.Mount("/api", api)
 }
