@@ -3,8 +3,6 @@ package pq
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/serwennn/koreyik/internal/config"
 )
@@ -41,16 +39,4 @@ func databaseUrlCreator(storage config.Storage) string {
 
 func (s *Storage) Shutdown() {
 	s.DB.Close()
-}
-
-func (s *Storage) Exec(ctx context.Context, query string, args ...any) (pgconn.CommandTag, error) {
-	return s.DB.Exec(ctx, query, args...)
-}
-
-func (s *Storage) Query(ctx context.Context, query string, args ...any) (pgx.Rows, error) {
-	return s.DB.Query(ctx, query, args...)
-}
-
-func (s *Storage) QueryRow(ctx context.Context, query string, args ...any) pgx.Row {
-	return s.DB.QueryRow(ctx, query, args...)
 }

@@ -35,7 +35,7 @@ type Anime struct {
 }
 
 func CreateAnime(storage *pq.Storage, ctx context.Context, a Anime) error {
-	_, err := storage.Exec(
+	_, err := storage.DB.Exec(
 		ctx, "INSERT INTO animes VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)",
 		a.ID, a.ThumbnailURL, a.Description, a.Rating,
 		a.TitleKk, a.TitleJp, a.TitleEn,
@@ -51,7 +51,7 @@ func CreateAnime(storage *pq.Storage, ctx context.Context, a Anime) error {
 }
 
 func GetAnime(storage *pq.Storage, ctx context.Context, id int) (Anime, error) {
-	row, _ := storage.Query(ctx, "SELECT * FROM animes WHERE id = $1", id)
+	row, _ := storage.DB.Query(ctx, "SELECT * FROM animes WHERE id = $1", id)
 
 	anime, err := pgx.CollectOneRow(row, pgx.RowToStructByName[Anime])
 	if err != nil {

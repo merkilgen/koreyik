@@ -12,7 +12,6 @@ import (
 	"github.com/serwennn/koreyik/internal/config"
 	"github.com/serwennn/koreyik/internal/server"
 	"github.com/serwennn/koreyik/internal/storage/pq"
-	"github.com/serwennn/koreyik/internal/storage/red"
 	"gitlab.com/greyxor/slogor"
 	"log/slog"
 	"net/http"
@@ -69,6 +68,8 @@ func Run() {
 		)
 	}
 
+	/* UNCOMMENT THIS ONE DAY
+
 	// Loading cache server (Redis)
 	cacheClient, err := red.New(cfg.CacheServer)
 	if err != nil {
@@ -86,6 +87,8 @@ func Run() {
 			slog.Int("database", cfg.CacheServer.Database),
 		)
 	}
+
+	*/
 
 	// Router
 	r := chi.NewRouter()
@@ -131,7 +134,6 @@ func Run() {
 			"Failed to shut down the server",
 			slog.String("error", err.Error()),
 		)
-
 		return
 	}
 
@@ -139,16 +141,20 @@ func Run() {
 	stg.Shutdown()
 	log.Info("Storage has been shut down")
 
+	/* UNCOMMENT THIS ONE DAY
+
 	// Gracefully shutdown the cache server
 	err = cacheClient.Shutdown()
 	if err != nil {
 		log.Error(
-			"Failed to shutdown the cache",
+			"Failed to shut down the cache",
 			slog.String("error", err.Error()),
 		)
 	} else {
 		log.Info("Cache server has been shutdown")
 	}
+
+	*/
 
 	log.Info("Server has been shut down")
 }
