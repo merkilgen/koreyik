@@ -6,32 +6,31 @@ import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
-	"github.com/redis/go-redis/v9"
 	"github.com/serwennn/koreyik/internal/models"
 	"github.com/serwennn/koreyik/internal/storage/pq"
-	"github.com/serwennn/koreyik/internal/storage/red"
 	"log/slog"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 type animeImpl struct{}
 
-func registerAnime(r chi.Router, stg *pq.Storage, cacheServer *red.CacheServer, log *slog.Logger) {
+func registerAnime(r chi.Router, stg *pq.Storage, log *slog.Logger) {
 	impl := &animeImpl{}
 
-	r.Get("/anime/{id}", impl.getAnime(stg, cacheServer, log))
+	r.Get("/anime/{id}", impl.getAnime(stg, log))
 	r.Post("/anime/", impl.postAnime(stg))
 }
 
-func (impl *animeImpl) getAnime(stg *pq.Storage, cacheServer *red.CacheServer, log *slog.Logger) http.HandlerFunc {
+func (impl *animeImpl) getAnime(stg *pq.Storage, log *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
 			http.Error(w, "Invalid ID", http.StatusBadRequest)
 			return
 		}
+
+		/* UNCOMMENT THIS ONE DAY
 
 		// Try to get an entry from Redis
 		pair := fmt.Sprintf("anime:%d", id)
@@ -47,6 +46,8 @@ func (impl *animeImpl) getAnime(stg *pq.Storage, cacheServer *red.CacheServer, l
 			log.Debug("Got an entry from the cache")
 			return
 		}
+
+		*/
 
 		// Get an entry from the main storage
 		anime, err := models.GetAnime(stg, r.Context(), id)
@@ -67,6 +68,8 @@ func (impl *animeImpl) getAnime(stg *pq.Storage, cacheServer *red.CacheServer, l
 			return
 		}
 
+		/* UNCOMMENT THIS ONE DAY
+
 		// Set entry in Redis
 		err = cacheServer.Client.JSONSet(r.Context(), pair, "$", serialized).Err()
 		if err != nil {
@@ -79,6 +82,8 @@ func (impl *animeImpl) getAnime(stg *pq.Storage, cacheServer *red.CacheServer, l
 			return
 		}
 		log.Debug("Wrote an entry to the cache", slog.Int("ttl", 30))
+
+		*/
 
 		w.Write(serialized)
 		return

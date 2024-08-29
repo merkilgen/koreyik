@@ -10,7 +10,7 @@ import (
 )
 
 type Storage struct {
-	db *pgxpool.Pool
+	DB *pgxpool.Pool
 }
 
 var ctx = context.Background()
@@ -28,7 +28,7 @@ func New(storageConfig config.Storage) (*Storage, error) {
 		return nil, fmt.Errorf(err.Error())
 	}
 
-	return &Storage{db: db}, nil
+	return &Storage{DB: db}, nil
 }
 
 func databaseUrlCreator(storage config.Storage) string {
@@ -40,17 +40,17 @@ func databaseUrlCreator(storage config.Storage) string {
 }
 
 func (s *Storage) Shutdown() {
-	s.db.Close()
+	s.DB.Close()
 }
 
 func (s *Storage) Exec(ctx context.Context, query string, args ...any) (pgconn.CommandTag, error) {
-	return s.db.Exec(ctx, query, args...)
+	return s.DB.Exec(ctx, query, args...)
 }
 
 func (s *Storage) Query(ctx context.Context, query string, args ...any) (pgx.Rows, error) {
-	return s.db.Query(ctx, query, args...)
+	return s.DB.Query(ctx, query, args...)
 }
 
 func (s *Storage) QueryRow(ctx context.Context, query string, args ...any) pgx.Row {
-	return s.db.QueryRow(ctx, query, args...)
+	return s.DB.QueryRow(ctx, query, args...)
 }
