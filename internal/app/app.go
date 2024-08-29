@@ -12,7 +12,7 @@ import (
 	"github.com/serwennn/koreyik/internal/config"
 	"github.com/serwennn/koreyik/internal/server"
 	"github.com/serwennn/koreyik/internal/storage/pq"
-	"github.com/serwennn/koreyik/internal/storage/redis"
+	"github.com/serwennn/koreyik/internal/storage/red"
 	"gitlab.com/greyxor/slogor"
 	"log/slog"
 	"net/http"
@@ -70,7 +70,7 @@ func Run() {
 	}
 
 	// Loading cache server (Redis)
-	cacheClient, err := redis.New(cfg.CacheServer)
+	cacheClient, err := red.New(cfg.CacheServer)
 	if err != nil {
 		log.Error("Failed to connect to the cache server", "error", err.Error())
 		os.Exit(1)
@@ -96,7 +96,7 @@ func Run() {
 		middleware.Recoverer,
 	)
 
-	routes.RegisterRoutes(r, stg)
+	routes.RegisterRoutes(r, stg, cacheClient, log)
 
 	srv := server.New(cfg, r)
 	go func() {
