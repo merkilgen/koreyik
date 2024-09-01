@@ -12,11 +12,14 @@ import (
 	"github.com/serwennn/koreyik/internal/config"
 	"github.com/serwennn/koreyik/internal/server"
 	"github.com/serwennn/koreyik/internal/storage/pq"
+	"github.com/serwennn/koreyik/internal/templates"
 	"gitlab.com/greyxor/slogor"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -99,7 +102,17 @@ func Run() {
 		middleware.Recoverer,
 	)
 
+	workDir, _ := os.Getwd()
+	filesDir := http.Dir(filepath.Join(workDir, "./web/static"))
+	FileServer(r, "/web/static", filesDir)
+
 	routes.RegisterRoutes(r, stg, log)
+
+	err = templates.Read()
+	if err != nil {
+		log.Error("Failed to read templates", "error", err.Error())
+		os.Exit(1)
+	}
 
 	srv := server.New(cfg, r)
 	go func() {
@@ -157,6 +170,27 @@ func Run() {
 	*/
 
 	log.Info("Server has been shut down")
+}
+
+// FileServer conveniently sets up a http.FileServer handler to serve
+// static files from a http.FileSystem.
+func FileServer(r chi.Router, path string, root http.FileSystem) {
+	if strings.ContainsAny(path, "{}*") {
+		panic("FileServer does not permit any URL parameters.")
+	}
+
+	if path != "/" && path[len(path)-1] != '/' {
+		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
+		path += "/"
+	}
+	path += "*"
+
+	r.Get(path, func(w http.ResponseWriter, r *http.Request) {
+		rctx := chi.RouteContext(r.Context())
+		pathPrefix := strings.TrimSuffix(rctx.RoutePattern(), "/*")
+		fs := http.StripPrefix(pathPrefix, http.FileServer(root))
+		fs.ServeHTTP(w, r)
+	})
 }
 
 func setupLogger(env string) *slog.Logger {

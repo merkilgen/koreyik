@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/serwennn/koreyik/internal/models"
 	"github.com/serwennn/koreyik/internal/storage/pq"
+	"github.com/serwennn/koreyik/internal/templates"
 	"log/slog"
 	"net/http"
 	"strconv"
@@ -84,6 +85,12 @@ func (impl *animeImpl) getAnime(stg *pq.Storage, log *slog.Logger) http.HandlerF
 		log.Debug("Wrote an entry to the cache", slog.Int("ttl", 30))
 
 		*/
+
+		err = templates.Template.ExecuteTemplate(w, "anime.html", anime)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
 		w.Write(serialized)
 		return
