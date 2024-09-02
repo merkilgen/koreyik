@@ -102,11 +102,12 @@ func Run() {
 		middleware.Recoverer,
 	)
 
+	routes.RegisterRoutes(r, stg, log)
+
+	// Load static files
 	workDir, _ := os.Getwd()
 	filesDir := http.Dir(filepath.Join(workDir, "./web/static"))
 	FileServer(r, "/web/static", filesDir)
-
-	routes.RegisterRoutes(r, stg, log)
 
 	err = templates.Read()
 	if err != nil {

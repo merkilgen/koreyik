@@ -63,7 +63,7 @@ func (impl *animeImpl) getAnime(stg *pq.Storage, log *slog.Logger) http.HandlerF
 		log.Debug("Got an entry from the storage")
 
 		// Serialize go struct to show it in json format
-		serialized, err := json.Marshal(anime)
+		_, err = json.Marshal(anime)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -91,9 +91,6 @@ func (impl *animeImpl) getAnime(stg *pq.Storage, log *slog.Logger) http.HandlerF
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		w.Write(serialized)
-		return
 	}
 }
 
