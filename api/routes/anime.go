@@ -19,8 +19,10 @@ type animeImpl struct{}
 func registerAnime(r chi.Router, stg *pq.Storage, log *slog.Logger) {
 	impl := &animeImpl{}
 
-	r.Get("/anime/{id}", impl.getAnime(stg, log))
-	r.Post("/anime/", impl.postAnime(stg))
+	r.Route("/anime", func(r chi.Router) {
+		r.Get("/{id}", impl.getAnime(stg, log))
+		r.Post("/", impl.postAnime(stg))
+	})
 }
 
 func (impl *animeImpl) getAnime(stg *pq.Storage, log *slog.Logger) http.HandlerFunc {
