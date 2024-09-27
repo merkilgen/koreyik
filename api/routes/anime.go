@@ -8,7 +8,6 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/serwennn/koreyik/internal/models"
 	"github.com/serwennn/koreyik/internal/storage/pq"
-	"github.com/serwennn/koreyik/internal/templates"
 	"log/slog"
 	"net/http"
 	"strconv"
@@ -64,14 +63,14 @@ func (impl *animeImpl) getAnime(stg *pq.Storage, log *slog.Logger) http.HandlerF
 		}
 		log.Debug("Got an entry from the storage")
 
+		/* UNCOMMENT THIS ONE DAY
+
 		// Serialize go struct to show it in json format
-		_, err = json.Marshal(anime)
+		serialized, err = json.Marshal(anime)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		/* UNCOMMENT THIS ONE DAY
 
 		// Set entry in Redis
 		err = cacheServer.Client.JSONSet(r.Context(), pair, "$", serialized).Err()
@@ -88,10 +87,17 @@ func (impl *animeImpl) getAnime(stg *pq.Storage, log *slog.Logger) http.HandlerF
 
 		*/
 
-		err = templates.Template.ExecuteTemplate(w, "anime.html", anime)
+		serialized, err := json.Marshal(anime)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		_, err = w.Write(serialized)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	}
 }
@@ -109,6 +115,7 @@ func (impl *animeImpl) postAnime(stg *pq.Storage) http.HandlerFunc {
 		err = models.CreateAnime(stg, r.Context(), newAnime)
 		if err != nil {
 			http.Error(w, "Create Anime: "+err.Error(), http.StatusInternalServerError)
+			return
 		}
 
 		w.WriteHeader(http.StatusCreated)

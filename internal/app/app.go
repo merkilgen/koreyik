@@ -12,7 +12,6 @@ import (
 	"github.com/serwennn/koreyik/internal/config"
 	"github.com/serwennn/koreyik/internal/server"
 	"github.com/serwennn/koreyik/internal/storage/pq"
-	"github.com/serwennn/koreyik/internal/templates"
 	"gitlab.com/greyxor/slogor"
 	"log/slog"
 	"net/http"
@@ -108,12 +107,6 @@ func Run() {
 	workDir, _ := os.Getwd()
 	filesDir := http.Dir(filepath.Join(workDir, "./web/static"))
 	FileServer(r, "/web/static", filesDir)
-
-	err = templates.Read()
-	if err != nil {
-		log.Error("Failed to read templates", "error", err.Error())
-		os.Exit(1)
-	}
 
 	srv := server.New(cfg, r)
 	go func() {
